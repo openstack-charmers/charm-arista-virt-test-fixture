@@ -1,0 +1,12 @@
+name: arista-virt-test-fixture
+summary: Arista test fixture.
+maintainer: OpenStack Charmers <openstack-charmers@lists.ubuntu.com>
+description: |
+  The Arista test fixture installs KVM, runs an Arista CVX virtual machine on
+  top of it and exposes its API.
+tags:
+  - network
+series:
+  - xenial
+  - bionic
+  - focal

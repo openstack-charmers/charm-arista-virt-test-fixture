@@ -1,0 +1,6 @@
+options:
+  arista-image-sha256sum:
+    type: string
+    default: d19c70248ec44cf634496cce72051ca5ef2f8ef6dff04e0e6fca353476d3654e
+    description: |
+      sha256sum of the qcow2 image passed as `arista-image` resource.
