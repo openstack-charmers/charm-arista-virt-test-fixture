@@ -16,10 +16,12 @@ This charm is implemented with the
 
 ## Deploy
 
-```bash
-juju deploy arista-virt-test-fixture                            \
-    --resource arista-image=/path/to/arista-cvx-virt-test.qcow2 \
-    --config arista-image-sha256sum=d19c70248ec44cf634496cce72051ca5ef2f8ef6dff04e0e6fca353476d3654e
+### From the store
+
+```
+$ juju deploy arista-virt-test-fixture                              \
+      --resource arista-image=/path/to/arista-cvx-virt-test.qcow2   \
+      --config arista-image-sha256sum=d19c70248ec44cf634496cce72051ca5ef2f8ef6dff04e0e6fca353476d3654e
 ```
 
 `arista-cvx-virt-test.qcow2` is based on Arista's
@@ -29,3 +31,11 @@ expected to:
 * configure the `interface management 1` with the IP address `172.27.32.7/23`,
 * expose eAPI to `https/443`, and
 * route all outgoing traffic to `172.27.32.1`.
+
+### From source
+
+```bash
+$ tox -e build
+$ juju deploy ./charm-arista-virt-test-fixture.charm \
+      --resource arista-image=/path/to/arista-cvx-virt-test.qcow2
+```

@@ -1,0 +1,6 @@
+__pycache__/
+
+/.stestr/
+/.tox/
+/build/
+/charm-arista-virt-test-fixture.charm
