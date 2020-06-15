@@ -15,19 +15,21 @@
 # limitations under the License.
 
 import logging
-from ops.charm import CharmBase
+import sys
+sys.path.append('lib')
 from ops.main import main
+import ops_openstack
 
 logger = logging.getLogger(__name__)
 
 
-class CharmAristaVirtTestFixture(CharmBase):
+class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
+
+    PACKAGES = ['qemu-kvm', 'libvirt-clients', 'libvirt-daemon-system',
+                'bridge-utils', 'virtinst']
+
     def __init__(self, *args):
         super().__init__(*args)
-        self.framework.observe(self.on.install, self.on_install)
-
-    def on_install(self, event):
-        logger.info("Congratulations, the charm was properly installed!")
 
 
 if __name__ == '__main__':

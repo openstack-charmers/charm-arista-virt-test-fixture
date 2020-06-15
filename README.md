@@ -36,6 +36,5 @@ expected to:
 
 ```bash
 $ tox -e build
-$ juju deploy ./charm-arista-virt-test-fixture.charm \
-      --resource arista-image=/path/to/arista-cvx-virt-test.qcow2
+$ juju deploy . --resource arista-image=/path/to/arista-cvx-virt-test.qcow2
 ```
