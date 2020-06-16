@@ -15,8 +15,12 @@
 # limitations under the License.
 
 import logging
+import os
+from pathlib import Path
+import subprocess
 import sys
 sys.path.append('lib')
+import charmhelpers.core.templating as ch_templating
 from ops.main import main
 import ops_openstack
 
@@ -30,6 +34,36 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
 
     def __init__(self, *args):
         super().__init__(*args)
+        self.framework.observe(self.on.start, self.on_start)
+
+    def on_start(self, event):
+        self.__render_templates()
+        self.__create_virtual_network()
+        self.state.is_started = True
+
+    __VIRTUAL_NETWORK_CONFIG_FILE = '/etc/arista/arista.xml'
+    __VIRTUAL_NETWORK_NAME = 'arista'
+
+    def __render_templates(self):
+        """Renders templates/* files."""
+        config_dir = Path(os.path.dirname(self.__VIRTUAL_NETWORK_CONFIG_FILE))
+        config_dir.mkdir(exist_ok=True, mode=0o755)
+
+        template_name = os.path.basename(self.__VIRTUAL_NETWORK_CONFIG_FILE)
+        context = {
+            'virtual_network_name': self.__VIRTUAL_NETWORK_NAME
+        }
+        ch_templating.render(template_name, str(config_dir / template_name),
+                             context, perms=0o644)
+
+    def __create_virtual_network(self):
+        """Creates a virsh network and an associated linux bridge."""
+        subprocess.check_call(['virsh', 'net-define',
+                               self.__VIRTUAL_NETWORK_CONFIG_FILE])
+        subprocess.check_call(['virsh', 'net-start',
+                               self.__VIRTUAL_NETWORK_NAME])
+        subprocess.check_call(['virsh', 'net-autostart',
+                               self.__VIRTUAL_NETWORK_NAME])
 
 
 if __name__ == '__main__':
