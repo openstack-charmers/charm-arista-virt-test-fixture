@@ -41,7 +41,7 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
         self.__create_virtual_network()
         self.state.is_started = True
 
-    __VIRTUAL_NETWORK_CONFIG_FILE = '/etc/arista/arista.xml'
+    __VIRTUAL_NETWORK_CONFIG_FILE = '/etc/arista/arista-virsh-network.xml'
     __VIRTUAL_NETWORK_NAME = 'arista'
 
     def __render_templates(self):
