@@ -39,10 +39,14 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
     def on_start(self, event):
         self.__render_templates()
         self.__create_virtual_network()
+        self.__create_virtual_machine()
         self.state.is_started = True
 
     __VIRTUAL_NETWORK_CONFIG_FILE = '/etc/arista/arista-virsh-network.xml'
-    __VIRTUAL_NETWORK_NAME = 'arista'
+    __CONFIG_CONTEXT = {
+        'virtual_network_name': 'arista',
+        'linux_bridge_name': 'virbr1',
+    }
 
     def __render_templates(self):
         """Renders templates/* files."""
@@ -50,20 +54,37 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
         config_dir.mkdir(exist_ok=True, mode=0o755)
 
         template_name = os.path.basename(self.__VIRTUAL_NETWORK_CONFIG_FILE)
-        context = {
-            'virtual_network_name': self.__VIRTUAL_NETWORK_NAME
-        }
-        ch_templating.render(template_name, str(config_dir / template_name),
-                             context, perms=0o644)
+        target_path = str(config_dir / template_name)
+        logger.info('Rendering {}'.format(target_path))
+        ch_templating.render(template_name, target_path,
+                             context=self.__CONFIG_CONTEXT, perms=0o644)
 
     def __create_virtual_network(self):
         """Creates a virsh network and an associated linux bridge."""
+        logger.info("Creating a virtual network '{}' and a linux bridge '{}'"
+                    .format(self.__CONFIG_CONTEXT['virtual_network_name'],
+                            self.__CONFIG_CONTEXT['linux_bridge_name']))
         subprocess.check_call(['virsh', 'net-define',
                                self.__VIRTUAL_NETWORK_CONFIG_FILE])
         subprocess.check_call(['virsh', 'net-start',
-                               self.__VIRTUAL_NETWORK_NAME])
+                               self.__CONFIG_CONTEXT['virtual_network_name']])
         subprocess.check_call(['virsh', 'net-autostart',
-                               self.__VIRTUAL_NETWORK_NAME])
+                               self.__CONFIG_CONTEXT['virtual_network_name']])
+
+    def __create_virtual_machine(self):
+        """Creates the arista-cvx KVM instance."""
+        vm_name = 'arista-cvx'
+        logger.info('Launching the {} VM'.format(vm_name))
+        arista_image_path = self.framework.model.resources.fetch(
+            'arista-image')
+        subprocess.check_call([
+            'virt-install', '--name', vm_name, '--ram=1536', '--vcpus=1',
+            '--boot', 'menu=on', '--disk',
+            'path={},device=disk,bus=ide,size=10'.format(arista_image_path),
+            '--graphics', 'none', '--network',
+            'bridge:{},model=e1000'.format(
+                self.__CONFIG_CONTEXT['linux_bridge_name']),
+            '--autostart', '--noautoconsole', '--os-variant=generic'])
 
 
 if __name__ == '__main__':

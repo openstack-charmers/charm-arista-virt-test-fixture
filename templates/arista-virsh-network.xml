@@ -1,7 +1,7 @@
 <network>
   <name>{{ virtual_network_name }}</name>
   <forward mode="nat"/>
-  <bridge name="virbr1" stp="on" delay="0"/>
+  <bridge name="{{ linux_bridge_name }}" stp="on" delay="0"/>
   <ip address="172.27.32.1" netmask="255.255.254.0">
     <dhcp>
       <range start="172.27.32.100" end="172.27.32.150"/>

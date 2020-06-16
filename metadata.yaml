@@ -10,3 +10,10 @@ series:
   - xenial
   - bionic
   - focal
+resources:
+  arista-image:
+    type: file
+    filename: arista-cvx-virt-test.qcow2
+    description: |
+      qcow2 image whose checksum matches the arista-image-sha256sum config
+      option.
