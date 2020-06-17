@@ -1,6 +1,9 @@
 # Arista test fixture
 
-> **WARNING**: WIP
+> **TODO**:
+>
+> * implement `arista-image-sha256sum` config option,
+> * set up Travis CI to run `tox`.
 
 This [Juju charm](https://juju.is/docs) installs KVM, runs an
 [Arista CVX](https://www.arista.com/en/cg-cv/cv-deploying-cvx) virtual machine
@@ -22,6 +25,10 @@ This charm is implemented with the
 $ juju deploy arista-virt-test-fixture                              \
       --resource arista-image=/path/to/arista-cvx-virt-test.qcow2   \
       --config arista-image-sha256sum=d19c70248ec44cf634496cce72051ca5ef2f8ef6dff04e0e6fca353476d3654e
+$ juju status | grep ready
+arista-virt-test-fixture/0*  active    idle   0        172.20.0.12            Unit is ready
+$ curl --insecure --location --silent https://172.20.0.12 | grep "<title>"
+   <title>Command API Explorer</title>
 ```
 
 `arista-cvx-virt-test.qcow2` is based on Arista's

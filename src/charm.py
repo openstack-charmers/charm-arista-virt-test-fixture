@@ -40,6 +40,7 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
         self.__render_templates()
         self.__create_virtual_network()
         self.__create_virtual_machine()
+        self.__expose_api()
         self.state.is_started = True
 
     __VIRTUAL_NETWORK_CONFIG_FILE = '/etc/arista/arista-virsh-network.xml'
@@ -85,6 +86,21 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
             'bridge:{},model=e1000'.format(
                 self.__CONFIG_CONTEXT['linux_bridge_name']),
             '--autostart', '--noautoconsole', '--os-variant=generic'])
+
+    def __expose_api(self):
+        """Exposes Arista CVX's eAPI to the world."""
+        ingress_address = str(self.model.get_binding('public').network
+                              .ingress_address)
+        ingress_port = '443'
+        logger.info('Exposing {}:{}'.format(ingress_address, ingress_port))
+        subprocess.check_call([
+            'iptables', '-t', 'nat', '-A', 'PREROUTING', '-p', 'tcp',
+            '-d', ingress_address, '--dport', ingress_port, '-j', 'DNAT',
+            '--to-destination', '172.27.32.7'])
+        subprocess.check_call([
+            'iptables', '-D', 'FORWARD',
+            '-o', self.__CONFIG_CONTEXT['linux_bridge_name'],
+            '-j', 'REJECT', '--reject-with', 'icmp-port-unreachable'])
 
 
 if __name__ == '__main__':
