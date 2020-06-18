@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
 
-    PACKAGES = ['qemu-kvm', 'libvirt-clients', 'libvirt-daemon-system',
+    PACKAGES = ['qemu-kvm', 'libvirt-bin', 'libvirt-daemon-system',
                 'bridge-utils', 'virtinst']
 
     def __init__(self, *args):
