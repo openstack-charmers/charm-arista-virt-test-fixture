@@ -3,7 +3,6 @@
 > **TODO**:
 >
 > * implement `arista-image-sha256sum` config option,
-> * set up Travis CI to run `tox`.
 
 ## Deploying from source
 
