@@ -18,9 +18,17 @@ import logging
 import os
 from pathlib import Path
 import subprocess
+
 import sys
 sys.path.append('lib')
+
 import charmhelpers.core.templating as ch_templating
+from charmhelpers.core.host import (
+    CompareHostReleases,
+    lsb_release,
+)
+from charmhelpers.fetch import apt_install
+
 from ops.main import main
 import ops_openstack
 
@@ -29,12 +37,25 @@ logger = logging.getLogger(__name__)
 
 class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
 
-    PACKAGES = ['qemu-kvm', 'libvirt-bin', 'libvirt-daemon-system',
-                'bridge-utils', 'virtinst']
+    PACKAGES = ['qemu-kvm', 'libvirt-daemon-system', 'bridge-utils',
+                'virtinst']
 
     def __init__(self, *args):
         super().__init__(*args)
+
+        # NOTE(lourot): on_install has already been registered by the parent
+        # constructor.
         self.framework.observe(self.on.start, self.on_start)
+
+    def on_install(self, event):
+        super().on_install(event)  # installs PACKAGES
+
+        # Installs series-dependent packages:
+        ubuntu_series = lsb_release()['DISTRIB_CODENAME'].lower()
+        if CompareHostReleases(ubuntu_series) < 'bionic':
+            apt_install(['libvirt-bin'], fatal=True)
+        else:
+            apt_install(['libvirt-clients'], fatal=True)
 
     def on_start(self, event):
         self.__render_templates()
