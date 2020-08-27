@@ -118,8 +118,15 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
             'iptables', '-t', 'nat', '-A', 'PREROUTING', '-p', 'tcp',
             '-d', ingress_address, '--dport', ingress_port, '-j', 'DNAT',
             '--to-destination', '172.27.32.7'])
+
+        ubuntu_series = lsb_release()['DISTRIB_CODENAME'].lower()
+        chain = ('FORWARD' if CompareHostReleases(ubuntu_series) < 'focal'
+                 else 'LIBVIRT_FWI')
+        logger.info('Deleting iptables rule on chain {} rejecting traffic '
+                    'going to {}'.format(
+                        chain, self.__CONFIG_CONTEXT['linux_bridge_name']))
         subprocess.check_call([
-            'iptables', '-D', 'FORWARD',
+            'iptables', '-D', chain,
             '-o', self.__CONFIG_CONTEXT['linux_bridge_name'],
             '-j', 'REJECT', '--reject-with', 'icmp-port-unreachable'])
 
