@@ -8,7 +8,8 @@
 
 ```
 $ tox -e build
-$ juju deploy . --resource arista-image=/path/to/arista-cvx-virt-test.qcow2
+$ juju deploy . --constraints mem=4G \
+      --resource arista-image=/path/to/arista-cvx-virt-test.qcow2
 ```
 
 ## Publishing to the store
