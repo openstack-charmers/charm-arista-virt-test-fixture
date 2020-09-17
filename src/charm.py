@@ -97,10 +97,17 @@ class CharmAristaVirtTestFixture(ops_openstack.OSBaseCharm):
         """Creates the arista-cvx KVM instance."""
         vm_name = 'arista-cvx'
         logger.info('Launching the {} VM'.format(vm_name))
+
         arista_image_path = self.framework.model.resources.fetch(
             'arista-image')
+
+        # Officially Arista CVX requires more:
+        # https://www.arista.com/en/cg-cv/cv-deploying-cvx
+        # But experience shows that this is enough for using as a test fixture:
+        resources = ['--ram=3072', '--vcpus=1']
+
         subprocess.check_call([
-            'virt-install', '--name', vm_name, '--ram=1536', '--vcpus=1',
+            'virt-install', '--name', vm_name, *resources,
             '--boot', 'menu=on', '--disk',
             'path={},device=disk,bus=ide,size=10'.format(arista_image_path),
             '--graphics', 'none', '--network',
