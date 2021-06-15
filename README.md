@@ -11,8 +11,7 @@ This charm is implemented with the [Operator framework](https://github.com/canon
 ```
 $ juju deploy cs:~openstack-charmers-next/arista-virt-test-fixture  \
       --constraints mem=4G                                          \
-      --resource arista-image=/path/to/arista-cvx-virt-test.qcow2   \
-      --config arista-image-sha256sum=d19c70248ec44cf634496cce72051ca5ef2f8ef6dff04e0e6fca353476d3654e
+      --resource arista-image=/path/to/arista-cvx-virt-test.qcow2
 $ juju status | grep ready
 arista-virt-test-fixture/0*  active    idle   0        172.20.0.12            Unit is ready
 $ curl --insecure --location --silent https://172.20.0.12 | grep "<title>"
