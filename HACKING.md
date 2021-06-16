@@ -1,9 +1,5 @@
 # Arista test fixture
 
-> **TODO**:
->
-> * implement `arista-image-sha256sum` config option,
-
 ## Deploying from source
 
 ```
